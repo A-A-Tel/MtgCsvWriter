@@ -1,5 +1,8 @@
-﻿using System.Net.Http.Json;
+﻿using System.Collections;
+using System.Globalization;
+using System.Net.Http.Json;
 using System.Text.Json;
+using CsvHelper;
 
 namespace MtgCsWriter;
 
@@ -32,10 +35,12 @@ internal class Program
             .OrderBy(set => set.ReleasedAt)
             .ToList();
 
-        foreach (SetObject set in handledSets)
-        {
-            Console.WriteLine(set);
-        }
+        string storeDirectory = Directory.GetCurrentDirectory();
+        string csvPath = Path.Combine(storeDirectory, "MTG.csv");
+        
+        await using var writer = new StreamWriter(csvPath);
+        await using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+        await csv.WriteRecordsAsync((IEnumerable)handledSets);
     }
 }
 
