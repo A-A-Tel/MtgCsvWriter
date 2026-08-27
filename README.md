@@ -12,7 +12,9 @@ Toegang tot de Scryfall API
 
 ## Bouwen
 
-Ga naar de projectfolder Clone de source code en run:
+Clone de source
+<br>
+Ga naar de projectfolder  code en run:
 ```shell
 dotnet publish
 ```
