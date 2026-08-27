@@ -36,7 +36,7 @@ internal class Program
             .ToList();
 
         string storeDirectory = Directory.GetCurrentDirectory();
-        string csvPath = Path.Combine(storeDirectory, "MTG.csv");
+        string csvPath = Path.Combine(storeDirectory, $"MTG-{DateTime.Now:yyyy-MM-dd}.csv");
         
         await using var writer = new StreamWriter(csvPath);
         await using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
