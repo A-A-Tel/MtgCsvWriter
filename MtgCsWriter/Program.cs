@@ -1,25 +1,50 @@
-﻿namespace MtgCsWriter;
+﻿using System.Net.Http.Json;
+using System.Text.Json;
+
+namespace MtgCsWriter;
 
 internal class Program
 {
-    public static void Main()
+    public static async Task Main()
     {
+        HttpClient client = new()
+        {
+            BaseAddress = new Uri ("https://api.scryfall.com"),
+            DefaultRequestHeaders = { 
+                { "Accept", "application/json" },
+                { "User-Agent", "C# HttpClient" }
+            }
+        };
+        ListObject? response = await client.GetFromJsonAsync<ListObject>("sets", new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
+        });
         
+        if (response is null)
+        {
+            Console.WriteLine("Scryfall did not respond as expected, please try again later.");
+            return;
+        }
+
+        List<SetObject> handledSets = response.Data
+            .Where(set => set.Code.Length == 3)
+            .OrderBy(set => set.ReleasedAt)
+            .ToList();
+
+        foreach (SetObject set in handledSets)
+        {
+            Console.WriteLine(set);
+        }
     }
 }
 
-public record SetObject
+public record SetObject(string Name, string Code, string ScryfallUri, DateOnly ReleasedAt, string IconSvgUri)
 {
-    public required string Name;
-    public required string Code;
-    public required string ScryfallUri;
-    public required string ReleasedAt;
-    public required string IconSvgUri;
+    public override string ToString()
+    {
+        return $"{{\"Name\":\"{Name}\",\"Code\":{Code}\",\"ScryfallUri\":\"{ScryfallUri}\",\"ReleasedAt\":\"{ReleasedAt}\",\"IconSvgUri\":\"{IconSvgUri}\"}}";
+    }
 }
 
-public record ListObject
-{
-    public required string Object;
-    public required bool HasMore;
-    public required List<SetObject> Data;
-}
+public record ListObject(string Object, bool HasMore, SetObject[] Data);
