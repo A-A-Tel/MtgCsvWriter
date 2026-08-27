@@ -4,8 +4,10 @@ Dit programma haalt alle officiële sets op van Scryfall en slaat de relevante d
 
 ## Benodigdheden
 
-.NET 10
+.NET 10 
+<br>
 Werkende internetverbinding
+<br>
 Toegang tot de Scryfall API
 
 ## Bouwen
